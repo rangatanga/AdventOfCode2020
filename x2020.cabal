@@ -18,10 +18,12 @@ extra-source-files:   CHANGELOG.md
 
 executable x2020
   main-is:            Main.hs
-  other-modules:      Day1
-                      , Day2
-                      , Day3
-                      , ExampleCode
+  other-modules:      
+    Day1
+    , Day2
+    , Day3
+    , Day4
+    , ExampleCode
 
   -- other-extensions:
   build-depends:       
@@ -29,6 +31,8 @@ executable x2020
     , bytestring
     , HDBC
     , HDBC-odbc
+    , split
+    , regex-posix
 
   hs-source-dirs:     src
   default-language:   Haskell2010
