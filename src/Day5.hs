@@ -30,8 +30,8 @@ processList1 :: [String] -> [Int]
 processList1 xs = [findSeat (take 7 x) (0,127) * 8 + findSeat (drop 7 x) (0,7) | x <- xs]
 
 processList2 :: [String] -> [(Int,Int)]
-processList2 xs = [(y1,y2) | y1 <- ys, y2 <- ys, y2-y1==2, not (elem (y1+1) ys)]
-                  where ys = [findSeat (take 7 x) (0,127) * 8 + findSeat (drop 7 x) (0,7) | x <- xs]
+processList2 xs = [(y1,y2) | y1 <- ys, y2 <- ys, y2-y1==2,  (y1+1) `notElem` ys]
+                  where ys = [findSeat x (0,1023) | x <- xs]
 
 findSeat :: [Char] -> (Int,Int) -> Int
 findSeat [] (y1,_) = y1
