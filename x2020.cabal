@@ -25,6 +25,8 @@ executable x2020
     , Day4
     , Day5
     , Day6
+    , Day7
+    , Day8
     , ExampleCode
 
   -- other-extensions:
@@ -35,6 +37,9 @@ executable x2020
     , HDBC-odbc
     , split
     , regex-posix
+    , containers
+    , text
+    , MissingH
 
   hs-source-dirs:     src
   default-language:   Haskell2010
