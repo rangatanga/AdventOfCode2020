@@ -27,6 +27,7 @@ executable x2020
     , Day6
     , Day7
     , Day8
+    , Day9
     , ExampleCode
 
   -- other-extensions:
