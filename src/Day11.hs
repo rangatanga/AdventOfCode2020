@@ -31,7 +31,7 @@ updateSeats2 xs = [[case xs!!j!!i of
                     '#' -> if occupiedNeighbours2 xs (i,j) >= 5 then 'L' else '#' | i <- [0..(length (head xs)-1)]] | j <- [0..(length xs-1)]]
 
 occupiedNeighbours2 :: [String] -> (Int,Int) -> Int
-occupiedNeighbours2 xs (i,j) = sum [walk xs (i,j) (u,v) | u <- [-1,0,1], v <- [-1,0,1], not (u==0 && v==0)]
+occupiedNeighbours2 xs (i,j) = sum [getNearestNeighbour xs (i,j) (u,v) | u <- [-1,0,1], v <- [-1,0,1], not (u==0 && v==0)]
 
 
 loop :: [String] -> ([String] -> [String]) -> IO ()
@@ -47,4 +47,4 @@ getNearestNeighbour :: [String] -> (Int,Int) -> (Int,Int) -> Int
 getNearestNeighbour xs (i,j) (i',j') | i+i'<0 || j+j'<0 || i+i' >= length (head xs) || j+j' >= length xs = 0
                       | xs!!(j+j')!!(i+i') == 'L' = 0
                       | xs!!(j+j')!!(i+i') == '#' = 1
-                      | otherwise = walk xs (i+i', j+j') (i',j')
+                      | otherwise = getNearestNeighbour xs (i+i', j+j') (i',j')
