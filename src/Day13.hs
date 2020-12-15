@@ -2,6 +2,7 @@ module Day13 (partOne, partTwo)
 where
 
 import Data.List.Split ( splitOn )
+import Data.List ( foldl' )
 
 partOne :: IO ()
 partOne = do
@@ -19,7 +20,7 @@ partTwo = do
     let (z1,_) = head y
     let y' = foldl sort [] y
              where sort xs u = shuffle xs u
-    let y'' = foldl minTime (1,1) y'
+    let y'' = foldl' minTime (1,1) y'
               where minTime (strt, stp) (p, offSet) = head [(x, (p*stp)) | x <- [strt, (strt+stp)..(p*stp)], (x+offSet) `mod` p == 0]
     print (y'')
 
