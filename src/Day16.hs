@@ -14,16 +14,15 @@ partTwo :: IO ()
 partTwo = do
     x <- linesBy (=="") . lines <$> readFile "Inputs/16_input.txt"
     let rules = formatRules (head x)
-    let validNearby = getValidTickets (rules) (formatTickets (last x))
+    let validNearby = getValidTickets rules (formatTickets (last x))
     let validNearbyT = transpose validNearby
     let z = foldl checkRules [] rules
             where checkRules out r = let (_,x) = foldl eval (0,[]) validNearbyT
                                              where eval (pos,xs) vals = if checkRule r vals then (pos+1, xs++[pos]) else (pos+1, xs)
                                      in out++[x]
-    let z' = concat (take 6 (processRulesToField z))
+    let departureRules = concat (take 6 (processRulesToField z))
     let myTicket = head (formatTickets (x!!1))
-    let res =  product [myTicket!!x | x <- z']
-    print res
+    print (product [myTicket!!x | x <- departureRules])
 
 
 formatRules :: [String] -> [[(Int,Int)]]
@@ -56,7 +55,7 @@ checkField rules = foldl eval []
 
 isValid :: Int -> [[(Int,Int)]] -> Bool
 isValid x = foldl eval False
-                  where eval b r = b || (x >= fst (head r) && x <= snd (last r))
+                  where eval b r = b || (x >= fst (head r) && x <= snd (head  r)) || (x >= fst (last r) && x <= snd (last  r))
 
 checkRule :: [(Int,Int)] -> [Int] -> Bool
 checkRule r = foldl eval True
@@ -64,11 +63,12 @@ checkRule r = foldl eval True
 
 processRulesToField :: [[Int]] -> [[Int]]
 processRulesToField xs = if maximum (map length xs) > 1 
-                        then let singles = concat [x | x <- xs, length x == 1 ]
-                             in processRulesToField (removeSingles singles xs)
-                        else xs
+                         then let singles = concat (filter (\x -> length x == 1) xs)
+                              in processRulesToField (removeSingles singles xs)
+                         else xs
 
 removeSingles :: [Int] -> [[Int]] -> [[Int]]
 removeSingles singles = foldl remove []
                         where remove ys x = if length x == 1 then ys++[x]
-                                            else ys++[[z | z <- x, z `notElem` singles]]
+                                            else ys++[filter (`notElem` singles) x]
+
