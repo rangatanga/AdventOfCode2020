@@ -50,9 +50,9 @@ processCube m ((mnX,mnY,mnZ),(mxX,mxY,mxZ))= foldl process m [(x,y,z) | x <- [mn
 
 processCube2 :: M.Map Pt2 Bool -> (Pt2,Pt2) -> M.Map Pt2 Bool
 processCube2 m ((mnX,mnY,mnZ,mnW),(mxX,mxY,mxZ,mxW))= foldl process m [(x,y,z,w) | x <- [mnX..mxX], y <- [mnY..mxY], z <- [mnZ..mxZ], w <- [mnW..mxW]]
-                                             where process m' pos = case M.lookup pos m of
-                                                                        Just True -> if (activeNeighbours2 m pos) `elem` [2,3] then m' else M.insert pos False m'
-                                                                        _ -> M.insert pos ((activeNeighbours2 m pos) `elem` [3]) m'
+                                                      where process m' pos = case M.lookup pos m of
+                                                                                Just True -> if (activeNeighbours2 m pos) `elem` [2,3] then m' else M.insert pos False m'
+                                                                                _ -> M.insert pos ((activeNeighbours2 m pos) `elem` [3]) m'
 
 
 activeNeighbours :: M.Map Pt1 Bool -> Pt1 -> Int
