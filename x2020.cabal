@@ -39,6 +39,7 @@ executable x2020
     , Day18
     , Day19
     , Day20
+    , Day21
     , Parser
     , ExampleCode
 
