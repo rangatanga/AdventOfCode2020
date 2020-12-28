@@ -5,89 +5,7 @@ where
 import Data.List
 import Data.Char
 import Control.Applicative
-
-newtype Parser a = P (String -> [(a,String)])
-
-parse :: Parser a -> String -> [(a,String)]
-parse (P p) inp = p inp
-
-item :: Parser Char 
-item = P (\inp -> case inp of
-            []      -> []
-            (x:xs)  -> [(x,xs)])
-
-instance Functor Parser where
-    -- fmap :: (a -> b) -> Parser a -> Parser b
-    fmap g p = P (\inp -> case parse p inp of
-                            []          -> []
-                            [(v,out)]   -> [(g v, out)])
-
-instance Applicative Parser where
-    -- pure :: a -> Parser a
-    pure v = P (\inp -> [(v,inp)])
-    -- <*> :: Parser (a -> b) -> Parser a -> Parser b
-    pg <*> px = P (\inp -> case parse pg inp of
-                            []          -> []
-                            [(g,out)]   -> parse (fmap g px) out)
-
-instance Monad Parser where
-    -- (>>=) :: Parser a -> (a -> Parser b) -> Parser b
-    p >>= f = P (\inp -> case parse p inp of
-                            []          -> []
-                            [(v,out)]  -> parse (f v) out)
-
-instance Alternative Parser where
-    --empty :: Parser a
-    empty = P (\inp -> [])
-    --(<|>) :: Parser a -> Parser a -> Parser a
-    p <|> q = P (\inp -> case parse p inp of
-                            []          -> parse q inp
-                            [(v,out)]   -> [(v,out)])
-
-
-sat :: (Char -> Bool) -> Parser Char 
-sat p = do  x <- item
-            if p x then return x else empty 
-
-digit :: Parser Char 
-digit = sat isDigit
-
-char :: Char -> Parser Char 
-char x = sat (== x)
-
-string :: String -> Parser String
-string []       = return []
-string (x:xs)   = do    char x
-                        string xs
-                        return (x:xs)
-
-letter :: Parser Char 
-letter = sat isAlpha
-
-nat :: Parser Int 
-nat = do    xs <- some digit
-            return (read xs)
-
-space :: Parser ()
-space = do  many (sat isSpace)
-            return ()
-
-token :: Parser a -> Parser a
-token p = do    space
-                v <- p
-                space
-                return v
-
-integer :: Parser Int 
-integer = token nat
-
-natural :: Parser Int 
-natural = token nat
-
-symbol :: String -> Parser String
-symbol xs = token (string xs)
-
-
+import qualified Parser as P
 
 {-
 part one
@@ -105,54 +23,54 @@ nat     ::= 0|1|2|...
 
 -}
 
-exprop :: Parser (Int, Char)
+exprop :: P.Parser (Int, Char)
 exprop = do 
   f <- factor
   do
-    symbol "+"
+    P.symbol "+"
     return (f, '+')
     <|> do
-      symbol "*"
+      P.symbol "*"
       return (f, '*')
 
-expr :: Parser Int 
+expr :: P.Parser Int 
 expr =  do  es <- many exprop
             f <- factor
             return (fst (foldl1 op (es ++ [(f,' ')])))
             where op (vl, sl) (vr, sr) = case sl of
                                             '+' -> (vl + vr, sr)
                                             '*' -> (vl * vr, sr)
-expr2 :: Parser Int 
+expr2 :: P.Parser Int 
 expr2 = do  t <- term
-            do symbol "*"
+            do P.symbol "*"
                e <- expr2
                return (t * e)
              <|> return t
 
-term :: Parser Int 
+term :: P.Parser Int 
 term = do f <- factor2
-          do  symbol "+"
+          do  P.symbol "+"
               t <- term
               return (f + t)
            <|> return f
 
 
-factor :: Parser Int 
-factor = do symbol "("
+factor :: P.Parser Int 
+factor = do P.symbol "("
             e <- expr
-            symbol ")"
+            P.symbol ")"
             return e
-         <|> natural
+         <|> P.natural
 
-factor2 :: Parser Int 
-factor2 = do symbol "("
+factor2 :: P.Parser Int 
+factor2 = do P.symbol "("
              e <- expr2
-             symbol ")"
+             P.symbol ")"
              return e
-           <|> natural
+           <|> P.natural
 
-eval :: Parser Int -> String -> Int
-eval p xs = case (parse p xs) of
+eval :: P.Parser Int -> String -> Int
+eval p xs = case (P.parse p xs) of
             [(n,[])]    -> n
             [(_,out)]   -> error ("Unused input " ++ out)
             []          -> error "Invalid input"
